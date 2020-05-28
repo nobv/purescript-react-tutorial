@@ -1,7 +1,7 @@
 {
   "name": "purescript-react-study",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "public/index.html",
   "author": "nobv <6e6f6275@gmail.com>",
   "license": "MIT",
   "devDependencies": {
@@ -13,6 +13,7 @@
     "spago": "^0.15.2"
   },
   "dependencies": {
-    "react": "^16.13.1"
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1"
   }
 }
