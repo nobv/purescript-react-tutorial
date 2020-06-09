@@ -2,8 +2,12 @@
   "name": "purescript-react-study",
   "version": "1.0.0",
   "main": "public/index.html",
-  "author": "nobv <6e6f6275@gmail.com>",
   "license": "MIT",
+  "scripts": {
+    "compile": "spago build",
+    "pscid": "pscid",
+    "serve": "spago build && parcel serve --no-source-maps public/index.html"
+  },
   "devDependencies": {
     "parcel-bundler": "^1.12.4",
     "pscid": "^2.9.0",

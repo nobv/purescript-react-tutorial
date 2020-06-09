@@ -1,16 +1,22 @@
-module Components.Squere where
+module Components.Sqaere where
 
-import Prelude
-import React.Basic
+import Prelude (Unit, unit, (#))
+import React.Basic (Component, JSX, createComponent, makeStateless)
 import React.Basic.DOM as R
 
-component :: Component Unit
-component = createComponent "squere"
+type Props
+  = { value :: String }
 
-squere :: JSX
-squere =
+component :: Component Unit
+component = createComponent "square"
+
+square :: Props -> JSX
+square props =
   unit
     # makeStateless component \_ ->
-        R.div_
-          [ R.button { className: "squere" }
-          ]
+        R.button
+          { className: "square"
+          , children:
+              [ R.text props.value
+              ]
+          }

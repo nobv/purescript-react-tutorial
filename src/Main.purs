@@ -13,7 +13,7 @@ import Components.App (app)
 
 main :: Effect Unit
 main = do
-  root <- getElementById "root" =<< (map toNonElementParentNode $ document =<< window)
+  root <- getElementById "container" =<< (map toNonElementParentNode $ document =<< window)
   case root of
-    Nothing -> throw "Root element not found"
+    Nothing -> throw "Container element not found"
     Just r -> render app r
