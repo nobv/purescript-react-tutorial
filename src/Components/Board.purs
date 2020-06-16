@@ -1,41 +1,59 @@
 module Components.Board where
 
-import Components.Sqaere as Square
+import Prelude
+import Components.Square as Square
+import Data.Array ((!!), (..))
 import Data.Array as Array
-import Data.Functor ((<#>))
-import Prelude (Unit, show, unit, (#))
-import React.Basic (Component, JSX, createComponent, makeStateless)
+import Data.Foldable (fold)
+import Data.Maybe (Maybe(..))
+import Effect (Effect)
+import React.Basic (Component, JSX, createComponent, make)
 import React.Basic.DOM as R
 
 component :: Component Unit
 component = createComponent "board"
 
-lenderSquare :: Int -> Int -> Array JSX
-lenderSquare start end = Array.range start end <#> (\i -> Square.square { value: show i })
-
 board :: JSX
-board =
-  unit
-    # makeStateless component \_ ->
-        R.div
-          { children:
-              [ R.div
-                  { className: "status"
-                  , children:
-                      [ R.text "Next player: X"
-                      ]
-                  }
-              , R.div
-                  { className: "board-row"
-                  , children: lenderSquare 0 2
-                  }
-              , R.div
-                  { className: "board-row"
-                  , children: lenderSquare 3 5
-                  }
-              , R.div
-                  { className: "board-row"
-                  , children: lenderSquare 6 8
-                  }
-              ]
-          }
+board = make component { initialState, render } unit
+  where
+  initialState :: { squares :: Array (Maybe String) }
+  initialState = { squares: (\_ -> Nothing) <$> 0 .. 8 }
+
+  render self =
+    R.div
+      { children:
+          [ R.div
+              { className: "status"
+              , children:
+                  [ R.text "Next player: X"
+                  ]
+              }
+          , R.div
+              { className: "board-row"
+              , children: render3Squares 0
+              }
+          , R.div
+              { className: "board-row"
+              , children: render3Squares 3
+              }
+          , R.div
+              { className: "board-row"
+              , children: render3Squares 6
+              }
+          ]
+      }
+    where
+    render3Squares :: Int -> Array JSX
+    render3Squares start =
+      start .. (start + 2)
+        <#> ( \i ->
+              Square.square
+                { value: fold $ self.state.squares !! i
+                , onClick: handleClick i
+                }
+          )
+
+    handleClick :: Int -> Effect Unit
+    handleClick index = do
+      self.setState \state -> state { squares = fold $ Array.updateAt index (Just "X") state.squares }
+      mempty
