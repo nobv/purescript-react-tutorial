@@ -20,11 +20,11 @@ board = make component { initialState, render } unit
   where
   initialState ::
     { squares :: Array (Maybe String)
-    , xIsNext :: Turn
+    , turn :: Turn
     }
   initialState =
     { squares: (\_ -> Nothing) <$> 0 .. 8
-    , xIsNext: Turn.First
+    , turn: Turn.First
     }
 
   render self =
@@ -33,7 +33,7 @@ board = make component { initialState, render } unit
           [ R.div
               { className: "status"
               , children:
-                  [ R.text $ "Next player: " <> show self.state.xIsNext
+                  [ R.text $ "Next player: " <> show self.state.turn
                   ]
               }
           , R.div
@@ -65,7 +65,7 @@ board = make component { initialState, render } unit
     handleClick index = do
       self.setState \state ->
         state
-          { squares = fold $ Array.updateAt index (pure $ show state.xIsNext) state.squares
-          , xIsNext = not state.xIsNext
+          { squares = fold $ Array.updateAt index (pure $ show state.turn) state.squares
+          , turn = not state.turn
           }
       mempty
