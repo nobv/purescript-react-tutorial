@@ -1,15 +1,15 @@
 module Components.Square where
 
 import Prelude
-import Data.Foldable (fold)
-import Data.Maybe (Maybe)
+import Data.Maybe (Maybe(..))
 import Effect (Effect)
 import React.Basic (Component, JSX, createComponent, makeStateless)
 import React.Basic.DOM as R
 import React.Basic.Events (handler_)
+import Types.Turn (Player)
 
 type Props
-  = { value :: Maybe String
+  = { value :: Maybe Player
     , onClick :: Effect Unit
     }
 
@@ -22,7 +22,9 @@ square =
     R.button
       { className: "square"
       , children:
-          [ R.text $ fold props.value
+          [ R.text case props.value of
+              Nothing -> ""
+              Just value -> show value
           ]
       , onClick: handler_ props.onClick
       }

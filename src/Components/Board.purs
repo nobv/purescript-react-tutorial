@@ -5,12 +5,11 @@ import Components.Square as Square
 import Data.Array ((!!), (..))
 import Data.Array as Array
 import Data.Foldable (fold)
-import Data.Maybe (Maybe(..))
+import Data.Maybe (Maybe(..), isJust)
 import Effect (Effect)
 import React.Basic (Component, JSX, createComponent, make)
 import React.Basic.DOM as R
-import Types.Turn (Turn)
-import Types.Turn as Turn
+import Types.Turn (Player(..))
 
 component :: Component Unit
 component = createComponent "board"
@@ -19,12 +18,12 @@ board :: JSX
 board = make component { initialState, render } unit
   where
   initialState ::
-    { squares :: Array (Maybe String)
-    , turn :: Turn
+    { squares :: Array (Maybe Player)
+    , player :: Player
     }
   initialState =
     { squares: (\_ -> Nothing) <$> 0 .. 8
-    , turn: Turn.First
+    , player: First
     }
 
   render self =
@@ -33,7 +32,9 @@ board = make component { initialState, render } unit
           [ R.div
               { className: "status"
               , children:
-                  [ R.text $ "Next player: " <> show self.state.turn
+                  [ R.text case caluculateWinner of
+                      Nothing -> "Next player: " <> show self.state.player
+                      Just winner -> "Winner: " <> show winner
                   ]
               }
           , R.div
@@ -65,7 +66,35 @@ board = make component { initialState, render } unit
     handleClick index = do
       self.setState \state ->
         state
-          { squares = fold $ Array.updateAt index (pure $ show state.turn) state.squares
-          , turn = not state.turn
+          { squares = fold $ Array.updateAt index (pure state.player) state.squares
+          , player = not state.player
           }
       mempty
+
+    caluculateWinner :: Maybe Player
+    caluculateWinner =
+      let
+        lines =
+          [ [ 0, 1, 2 ]
+          , [ 3, 4, 5 ]
+          , [ 6, 7, 8 ]
+          , [ 0, 3, 6 ]
+          , [ 1, 4, 7 ]
+          , [ 2, 5, 8 ]
+          , [ 0, 4, 8 ]
+          , [ 2, 4, 6 ]
+          ]
+      in
+        fold $ lines
+          <#> ( \line -> case line !! 0, line !! 1, line !! 2 of
+                Just a, Just b, Just c ->
+                  let
+                    sa = join $ self.state.squares !! a
+
+                    sb = join $ self.state.squares !! b
+
+                    sc = join $ self.state.squares !! c
+                  in
+                    if (isJust sa && sa == sb && sa == sc) then sa else Nothing
+                _, _, _ -> Nothing
+            )

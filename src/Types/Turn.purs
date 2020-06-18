@@ -3,17 +3,17 @@ module Types.Turn where
 import Prelude
 import Data.HeytingAlgebra (ff)
 
-data Turn
+data Player
   = First
   | Second
 
-derive instance eqTurn :: Eq Turn
+derive instance eqPlayer :: Eq Player
 
-instance showTurn :: Show Turn where
+instance showPlayer :: Show Player where
   show First = "X"
   show Second = "O"
 
-instance heytingAlgebraTurn :: HeytingAlgebra Turn where
+instance heytingAlgebraPlayer :: HeytingAlgebra Player where
   ff = Second
   tt = First
   implies Second _ = First
@@ -26,3 +26,7 @@ instance heytingAlgebraTurn :: HeytingAlgebra Turn where
   disj Second Second = Second
   not First = ff
   not Second = First
+
+instance semigroupPlayer :: Semigroup Player where
+  append First _ = First
+  append Second _ = Second
