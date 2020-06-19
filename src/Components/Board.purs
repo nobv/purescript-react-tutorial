@@ -63,13 +63,14 @@ board = make component { initialState, render } unit
           )
 
     handleClick :: Int -> Effect Unit
-    handleClick index = do
-      self.setState \state ->
-        state
-          { squares = fold $ Array.updateAt index (pure state.player) state.squares
-          , player = not state.player
-          }
-      mempty
+    handleClick index = case caluculateWinner, self.state.squares !! index of
+      Nothing, Just _ -> do
+        self.setState \state ->
+          state
+            { squares = fold $ Array.updateAt index (pure state.player) state.squares
+            , player = not state.player
+            }
+      _, _ -> mempty
 
     caluculateWinner :: Maybe Player
     caluculateWinner =
