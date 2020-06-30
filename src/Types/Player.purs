@@ -1,4 +1,4 @@
-module Types.Turn where
+module Types.Player where
 
 import Prelude
 import Data.HeytingAlgebra (ff)
@@ -8,6 +8,8 @@ data Player
   | Second
 
 derive instance eqPlayer :: Eq Player
+
+derive instance ordPlayer :: Ord Player
 
 instance showPlayer :: Show Player where
   show First = "X"

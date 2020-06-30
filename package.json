@@ -7,7 +7,8 @@
     "compile": "spago build",
     "pscid": "pscid",
     "serve": "spago build && parcel serve --no-source-maps public/index.html",
-    "autobuild": "spago build --watch"
+    "autobuild": "spago build --watch",
+    "clean": "rm -rf .cache output"
   },
   "devDependencies": {
     "parcel-bundler": "^1.12.4",

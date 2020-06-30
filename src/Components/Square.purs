@@ -6,7 +6,7 @@ import Effect (Effect)
 import React.Basic (Component, JSX, createComponent, makeStateless)
 import React.Basic.DOM as R
 import React.Basic.Events (handler_)
-import Types.Turn (Player)
+import Types.Player (Player)
 
 type Props
   = { value :: Maybe Player
