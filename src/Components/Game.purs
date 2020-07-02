@@ -2,12 +2,13 @@ module Components.Game where
 
 import Prelude
 import Components.Board as Board
-import Data.Array (length, take, (!!))
+import Data.Array (length, mapWithIndex, take, (!!))
 import Data.Foldable (fold)
 import Data.Maybe (Maybe(..), isJust)
 import Effect (Effect)
 import React.Basic (Component, JSX, createComponent, make)
 import React.Basic.DOM as R
+import React.Basic.Events (handler_)
 import Types.History (History)
 import Types.History as History
 import Types.Player (Player(..))
@@ -32,38 +33,58 @@ game = make component { initialState, render } unit
     }
 
   render self =
-    R.div
-      { className: "game"
-      , children:
-          [ R.div
-              { className: "game-board"
-              , children:
-                  [ Board.board
-                      { squares: _.squares $ History.last self.state.history
-                      , onClick: handleClick
-                      }
-                  ]
-              }
-          , R.div
-              { className: "game-info"
-              , children:
-                  [ R.div
-                      { className: "status"
-                      , children:
-                          [ R.text case caluculateWinner $ _.squares $ History.last self.state.history of
-                              Nothing -> "Next player: " <> show self.state.player
-                              Just winner -> "Winner: " <> show winner
-                          ]
-                      }
-                  , R.ol
-                      { className: "moves"
-                      , children:
-                          []
-                      }
-                  ]
-              }
-          ]
-      }
+    let
+      current = _.squares $ fold $ self.state.history !! self.state.stepNumber
+    in
+      R.div
+        { className: "game"
+        , children:
+            [ R.div
+                { className: "game-board"
+                , children:
+                    [ Board.board
+                        { squares: current
+                        , onClick: handleClick
+                        }
+                    ]
+                }
+            , R.div
+                { className: "game-info"
+                , children:
+                    [ R.div
+                        { className: "status"
+                        , children:
+                            [ R.text case caluculateWinner current of
+                                Nothing -> "Next player: " <> show self.state.player
+                                Just winner -> "Winner: " <> show winner
+                            ]
+                        }
+                    , R.ol
+                        { className: "moves"
+                        , children:
+                            self.state.history
+                              # mapWithIndex
+                                  ( \move step ->
+                                      R.li
+                                        { children:
+                                            [ R.button
+                                                { onClick: handler_ $ jumpTo move
+                                                , children:
+                                                    [ R.text
+                                                        if move > 0 then
+                                                          "Go to move #" <> show move
+                                                        else
+                                                          "Go to game start"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                  )
+                        }
+                    ]
+                }
+            ]
+        }
     where
     handleClick :: Int -> Effect Unit
     handleClick index =
@@ -78,7 +99,10 @@ game = make component { initialState, render } unit
           Nothing, Just _ -> do
             self.setState \state ->
               state
-                { history = History.insert { squares: Square.update index (self.state.player) current.squares } state.history
+                { history =
+                  History.insert
+                    { squares: Square.update index (self.state.player) current.squares }
+                    state.history
                 , player = not state.player
                 , stepNumber = length state.history
                 }

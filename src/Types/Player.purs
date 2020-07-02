@@ -1,7 +1,7 @@
 module Types.Player where
 
 import Prelude
-import Data.HeytingAlgebra (ff)
+import Data.HeytingAlgebra (ff, tt)
 
 data Player
   = First
@@ -27,7 +27,7 @@ instance heytingAlgebraPlayer :: HeytingAlgebra Player where
   disj _ First = First
   disj Second Second = Second
   not First = ff
-  not Second = First
+  not Second = tt
 
 instance semigroupPlayer :: Semigroup Player where
   append First _ = First
