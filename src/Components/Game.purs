@@ -97,14 +97,14 @@ game = make component { initialState, render } unit
       in
         case caluculateWinner squares, squares !! index of
           Nothing, Just _ -> do
-            self.setState \state ->
-              state
+            self.setState
+              _
                 { history =
                   History.insert
                     { squares: Square.update index (self.state.player) current.squares }
-                    state.history
-                , player = not state.player
-                , stepNumber = length state.history
+                    self.state.history
+                , player = not self.state.player
+                , stepNumber = length self.state.history
                 }
           _, _ -> mempty
 
@@ -138,8 +138,8 @@ game = make component { initialState, render } unit
 
     jumpTo :: Int -> Effect Unit
     jumpTo step =
-      self.setState \state ->
-        state
+      self.setState
+        _
           { stepNumber = step
-          , player = if (step `mod` 2) == 0 then Second else First
+          , player = if (step `mod` 2) == 0 then First else Second
           }
